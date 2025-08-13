@@ -251,6 +251,39 @@ class SSOSettings {
 			);
 
 			add_settings_field(
+				'discourse_sso_login_icon_enabled',
+				__( 'Enable Login Link Icon', 'wp-discourse' ),
+				array(
+					$this,
+					'sso_client_login_icon_enabled_checkbox',
+				),
+				'discourse_sso_client',
+				'discourse_sso_client_settings_section'
+			);
+
+			add_settings_field(
+				'discourse_sso_login_icon_id',
+				__( 'Login Link Icon', 'wp-discourse' ),
+				array(
+					$this,
+					'sso_client_login_icon_selector',
+				),
+				'discourse_sso_client',
+				'discourse_sso_client_settings_section'
+			);
+
+			add_settings_field(
+				'discourse_sso_login_icon_size',
+				__( 'Login Link Icon Size', 'wp-discourse' ),
+				array(
+					$this,
+					'sso_client_login_icon_size_input',
+				),
+				'discourse_sso_client',
+				'discourse_sso_client_settings_section'
+			);
+
+			add_settings_field(
 				'discourse_enable_sso_sync',
 				__( 'Sync Existing Users by Email', 'wp-discourse' ),
 				array(
@@ -822,5 +855,76 @@ class SSOSettings {
 			</p>
 		<?php endif; ?>
 		<?php
+	}
+
+	/**
+	 * Outputs markup for sso-client-login-icon-enabled checkbox.
+	 */
+	public function sso_client_login_icon_enabled_checkbox() {
+		$this->form_helper->checkbox_input(
+			'sso-client-login-icon-enabled',
+			'discourse_sso_client',
+			__( 'Display an icon before the login link text.', 'wp-discourse' ),
+			__(
+				'When enabled, you can select an icon from your media library to display before the login link text.',
+				'wp-discourse'
+			)
+		);
+	}
+
+	/**
+	 * Outputs markup for sso-client-login-icon-id media selector.
+	 */
+	public function sso_client_login_icon_selector() {
+		$options = $this->get_options();
+		$icon_id = ! empty( $options['sso-client-login-icon-id'] ) ? intval( $options['sso-client-login-icon-id'] ) : 0;
+		$icon_url = '';
+
+		if ( $icon_id ) {
+			$icon_url = wp_get_attachment_image_url( $icon_id, 'thumbnail' );
+		}
+
+		?>
+		<div class="wpdc-media-selector">
+			<input type="hidden" id="discourse-sso-client-login-icon-id"
+				   name="discourse_sso_client[sso-client-login-icon-id]"
+				   value="<?php echo esc_attr( $icon_id ); ?>" />
+
+			<div class="wpdc-media-preview" <?php echo $icon_url ? '' : 'style="display:none;"'; ?>>
+				<img src="<?php echo esc_url( $icon_url ); ?>" alt="" style="max-width: 100px; max-height: 100px;" />
+			</div>
+
+			<button type="button" class="button wpdc-select-media" data-target="discourse-sso-client-login-icon-id">
+				<?php esc_html_e( 'Select Icon', 'wp-discourse' ); ?>
+			</button>
+
+			<button type="button" class="button wpdc-remove-media" data-target="discourse-sso-client-login-icon-id"
+					<?php echo $icon_url ? '' : 'style="display:none;"'; ?>>
+				<?php esc_html_e( 'Remove Icon', 'wp-discourse' ); ?>
+			</button>
+		</div>
+
+		<p class="description">
+			<?php esc_html_e( 'Select an icon from your media library to display before the login link text. The icon will be automatically resized.', 'wp-discourse' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Outputs markup for sso-client-login-icon-size input.
+	 */
+	public function sso_client_login_icon_size_input() {
+		$this->form_helper->input(
+			'sso-client-login-icon-size',
+			'discourse_sso_client',
+			__(
+				'The size of the login link icon in pixels. Default is 24 pixels.',
+				'wp-discourse'
+			),
+			'number',
+			16,
+			64,
+			'24'
+		);
 	}
 }
