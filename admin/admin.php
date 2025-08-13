@@ -56,12 +56,22 @@ if ( is_admin() ) {
  */
 function enqueue_admin_scripts() {
 	$style_path = '/css/admin-styles.css';
-	wp_register_style( 'admin_styles', plugins_url( $style_path, __FILE__ ), array(), filemtime( plugin_dir_path( __FILE__ ) . $style_path ) );
-	wp_enqueue_style( 'admin_styles' );
+	$style_file_path = plugin_dir_path( __FILE__ ) . $style_path;
+	$style_version = file_exists( $style_file_path ) ? filemtime( $style_file_path ) : time();
+
+	if ( file_exists( $style_file_path ) ) {
+		wp_register_style( 'admin_styles', plugins_url( $style_path, __FILE__ ), array(), $style_version );
+		wp_enqueue_style( 'admin_styles' );
+	}
 
 	$script_path = '/js/admin.js';
-	wp_register_script( 'admin_js', plugins_url( $script_path, __FILE__ ), array( 'jquery', 'tags-box' ), filemtime( plugin_dir_path( __FILE__ ) . $script_path ), true );
-	wp_enqueue_script( 'admin_js' );
+	$script_file_path = plugin_dir_path( __FILE__ ) . $script_path;
+	$script_version = file_exists( $script_file_path ) ? filemtime( $script_file_path ) : time();
+
+	if ( file_exists( $script_file_path ) ) {
+		wp_register_script( 'admin_js', plugins_url( $script_path, __FILE__ ), array( 'jquery', 'tags-box' ), $script_version, true );
+		wp_enqueue_script( 'admin_js' );
+	}
 	$publishing_options = get_option( 'discourse_publish' );
 	$max_tags           = ! isset( $publishing_options['max-tags'] ) ? 5 : $publishing_options['max-tags'];
 	$data               = array(
@@ -79,23 +89,33 @@ function enqueue_admin_scripts() {
 
 		// Enqueue custom login customization assets
 		$login_css_path = '/css/discourse-login-customization.css';
-		wp_register_style(
-			'discourse_login_customization_css',
-			plugins_url( $login_css_path, __FILE__ ),
-			array(),
-			filemtime( plugin_dir_path( __FILE__ ) . $login_css_path )
-		);
-		wp_enqueue_style( 'discourse_login_customization_css' );
+		$login_css_file_path = plugin_dir_path( __FILE__ ) . $login_css_path;
+		$login_css_version = file_exists( $login_css_file_path ) ? filemtime( $login_css_file_path ) : time();
+
+		if ( file_exists( $login_css_file_path ) ) {
+			wp_register_style(
+				'discourse_login_customization_css',
+				plugins_url( $login_css_path, __FILE__ ),
+				array(),
+				$login_css_version
+			);
+			wp_enqueue_style( 'discourse_login_customization_css' );
+		}
 
 		$login_js_path = '/js/discourse-login-customization.js';
-		wp_register_script(
-			'discourse_login_customization_js',
-			plugins_url( $login_js_path, __FILE__ ),
-			array( 'jquery', 'media-upload', 'media-views' ),
-			filemtime( plugin_dir_path( __FILE__ ) . $login_js_path ),
-			true
-		);
-		wp_enqueue_script( 'discourse_login_customization_js' );
+		$login_js_file_path = plugin_dir_path( __FILE__ ) . $login_js_path;
+		$login_js_version = file_exists( $login_js_file_path ) ? filemtime( $login_js_file_path ) : time();
+
+		if ( file_exists( $login_js_file_path ) ) {
+			wp_register_script(
+				'discourse_login_customization_js',
+				plugins_url( $login_js_path, __FILE__ ),
+				array( 'jquery', 'media-upload', 'media-views' ),
+				$login_js_version,
+				true
+			);
+			wp_enqueue_script( 'discourse_login_customization_js' );
+		}
 	}
 }
 

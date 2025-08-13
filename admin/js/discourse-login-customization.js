@@ -44,22 +44,66 @@
 
             // Handle media selection
             mediaFrame.on('select', function() {
-                var attachment = mediaFrame.state().get('selection').first().toJSON();
-                
-                // Update hidden input with attachment ID
-                targetInput.val(attachment.id);
-                
-                // Update preview image
-                var thumbnailUrl = attachment.sizes && attachment.sizes.thumbnail 
-                    ? attachment.sizes.thumbnail.url 
-                    : attachment.url;
-                    
-                previewContainer.find('img').attr('src', thumbnailUrl);
-                previewContainer.show();
-                removeButton.show();
-                
-                // Mark as changed for WordPress settings
-                targetInput.trigger('change');
+                try {
+                    // Check if selection exists
+                    var selection = mediaFrame.state().get('selection');
+                    if (!selection || !selection.first()) {
+                        console.error('WP Discourse: No media selection found');
+                        return;
+                    }
+
+                    // Safely get attachment data
+                    var attachment;
+                    try {
+                        attachment = selection.first().toJSON();
+                    } catch (e) {
+                        console.error('WP Discourse: Error parsing attachment data:', e);
+                        return;
+                    }
+
+                    // Verify attachment and attachment ID exist
+                    if (!attachment || !attachment.id) {
+                        console.error('WP Discourse: Invalid attachment data - missing ID');
+                        return;
+                    }
+
+                    // Update hidden input with attachment ID
+                    targetInput.val(attachment.id);
+
+                    // Safely derive thumbnail URL with fallbacks
+                    var thumbnailUrl = '';
+                    if (attachment.sizes && attachment.sizes.thumbnail && attachment.sizes.thumbnail.url) {
+                        thumbnailUrl = attachment.sizes.thumbnail.url;
+                    } else if (attachment.url) {
+                        thumbnailUrl = attachment.url;
+                    } else {
+                        // Use a default placeholder or clear the preview
+                        console.warn('WP Discourse: No valid image URL found for attachment');
+                        thumbnailUrl = ''; // Could also use a default placeholder URL
+                    }
+
+                    // Only update preview and show elements when we have a valid URL
+                    if (thumbnailUrl) {
+                        previewContainer.find('img').attr('src', thumbnailUrl);
+                        previewContainer.show();
+                        removeButton.show();
+
+                        // Mark as changed for WordPress settings only after successful update
+                        targetInput.trigger('change');
+                    } else {
+                        // Clear the input if no valid URL is available
+                        targetInput.val('');
+                        previewContainer.hide();
+                        removeButton.hide();
+                    }
+
+                } catch (error) {
+                    console.error('WP Discourse: Error handling media selection:', error);
+                    // Clear the input on error to prevent broken state
+                    targetInput.val('');
+                    previewContainer.hide();
+                    removeButton.hide();
+                }
             });
 
             mediaFrame.open();
