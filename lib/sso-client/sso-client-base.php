@@ -54,36 +54,11 @@ class SSOClientBase extends DiscourseBase {
 
 		// Build icon HTML if enabled
 		$icon_html = '';
-
-		// DEBUG: Log icon processing
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'WP Discourse SSO Icon Debug - Options: ' . print_r( $options, true ) );
-			error_log( 'WP Discourse SSO Icon Debug - Icon enabled check: ' . ( ! empty( $options['sso-client-login-icon-enabled'] ) ? 'YES' : 'NO' ) );
-			error_log( 'WP Discourse SSO Icon Debug - Icon ID check: ' . ( ! empty( $options['sso-client-login-icon-id'] ) ? 'YES (' . $options['sso-client-login-icon-id'] . ')' : 'NO' ) );
-		}
-
 		if ( ! empty( $options['sso-client-login-icon-enabled'] ) && ! empty( $options['sso-client-login-icon-id'] ) ) {
 			$icon_id   = (int) $options['sso-client-login-icon-id'];
 			$icon_size = isset( $options['sso-client-login-icon-size'] )
 				? max( 8, min( 256, (int) $options['sso-client-login-icon-size'] ) )
 				: 24;
-
-			// DEBUG: Log icon generation attempt
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'WP Discourse SSO Icon Debug - Attempting to generate icon HTML for ID: ' . $icon_id . ', Size: ' . $icon_size );
-
-				// Test if attachment exists
-				$attachment_exists = get_post( $icon_id );
-				error_log( 'WP Discourse SSO Icon Debug - Attachment exists: ' . ( $attachment_exists ? 'YES' : 'NO' ) );
-
-				if ( $attachment_exists ) {
-					error_log( 'WP Discourse SSO Icon Debug - Attachment type: ' . $attachment_exists->post_mime_type );
-					$file_path = get_attached_file( $icon_id );
-					error_log( 'WP Discourse SSO Icon Debug - File path: ' . $file_path );
-					error_log( 'WP Discourse SSO Icon Debug - File exists: ' . ( file_exists( $file_path ) ? 'YES' : 'NO' ) );
-				}
-			}
-
 			$icon_html = wp_get_attachment_image(
 				$icon_id,
 				array( $icon_size, $icon_size ),
@@ -98,22 +73,10 @@ class SSOClientBase extends DiscourseBase {
 					'style'       => 'vertical-align: middle; margin-right: 8px;',
 				)
 			) ?: '';
-
-			// DEBUG: Log icon generation result
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( 'WP Discourse SSO Icon Debug - Generated icon HTML length: ' . strlen( $icon_html ) );
-				error_log( 'WP Discourse SSO Icon Debug - Generated icon HTML: ' . $icon_html );
-			}
 		}
 
 		// Build the complete anchor content with icon and text
 		$anchor_content = $icon_html . sanitize_text_field( $anchor );
-
-		// DEBUG: Log final content
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'WP Discourse SSO Icon Debug - Final anchor content: ' . $anchor_content );
-			error_log( 'WP Discourse SSO Icon Debug - Icon HTML length in final: ' . strlen( $icon_html ) );
-		}
 
 		// Create the button with hardcoded wp-discourse-link class
 		$button = sprintf(
@@ -121,11 +84,6 @@ class SSOClientBase extends DiscourseBase {
 			esc_url( $sso_login_url ),
 			$anchor_content
 		);
-
-		// DEBUG: Log final button HTML
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'WP Discourse SSO Icon Debug - Final button HTML: ' . $button );
-		}
 
 		return apply_filters( 'wpdc_sso_client_login_button', $button, $sso_login_url, $link_options );
 	}

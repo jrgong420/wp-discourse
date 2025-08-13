@@ -90,14 +90,40 @@ class Client extends SSOClientBase {
 			return null;
 		}
 
+		// Define allowed HTML for SSO link (includes img tag for icon support)
+		$allowed_html = array(
+			'a' => array(
+				'href'  => array(),
+				'class' => array(),
+				'title' => array(),
+				'rel'   => array(),
+				'target' => array(),
+			),
+			'img' => array(
+				'src'      => array(),
+				'class'    => array(),
+				'alt'      => array(),
+				'width'    => array(),
+				'height'   => array(),
+				'style'    => array(),
+				'loading'  => array(),
+				'decoding' => array(),
+				'srcset'   => array(),
+				'sizes'    => array(),
+				'aria-hidden' => array(),
+				'role'     => array(),
+			),
+		);
+
 		printf(
 			'<p class="wp-discourse-wrapper">%s</p><p>&nbsp;</p>',
-			wp_kses_data(
+			wp_kses(
 				$this->get_discourse_sso_link_markup(
 					array(
 						'redirect' => $this->options['sso-client-login-form-redirect'],
 					)
-				)
+				),
+				$allowed_html
 			)
 		);
 
