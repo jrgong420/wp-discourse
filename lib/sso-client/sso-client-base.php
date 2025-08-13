@@ -51,7 +51,32 @@ class SSOClientBase extends DiscourseBase {
 		$sso_login_url = $this->get_discourse_sso_url( $redirect_to );
 
 		$anchor = apply_filters( 'wpdc_sso_client_login_anchor', $anchor );
-		$button = sprintf( '<a class="wpdc-sso-client-login-link" href="%s">%s</a>', esc_url( $sso_login_url ), sanitize_text_field( $anchor ) );
+
+		// Build icon HTML if enabled
+		$icon_html = '';
+		if ( ! empty( $options['sso-client-login-icon-enabled'] ) && ! empty( $options['sso-client-login-icon-id'] ) ) {
+			$icon_id = intval( $options['sso-client-login-icon-id'] );
+			$icon_size = ! empty( $options['sso-client-login-icon-size'] ) ? intval( $options['sso-client-login-icon-size'] ) : 24;
+			$icon_url = wp_get_attachment_image_url( $icon_id, 'full' );
+
+			if ( $icon_url ) {
+				$icon_html = sprintf(
+					'<img src="%s" alt="" style="width: %dpx; height: auto; margin-right: 8px; vertical-align: middle;" />',
+					esc_url( $icon_url ),
+					$icon_size
+				);
+			}
+		}
+
+		// Build the complete anchor content with icon and text
+		$anchor_content = $icon_html . sanitize_text_field( $anchor );
+
+		// Create the button with hardcoded wp-discourse-link class
+		$button = sprintf(
+			'<a class="wpdc-sso-client-login-link wp-discourse-link" href="%s">%s</a>',
+			esc_url( $sso_login_url ),
+			$anchor_content
+		);
 
 		return apply_filters( 'wpdc_sso_client_login_button', $button, $sso_login_url, $link_options );
 	}

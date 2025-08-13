@@ -91,7 +91,7 @@ class Client extends SSOClientBase {
 		}
 
 		printf(
-			'<p>%s</p><p>&nbsp;</p>',
+			'<p class="wp-discourse-wrapper">%s</p><p>&nbsp;</p>',
 			wp_kses_data(
 				$this->get_discourse_sso_link_markup(
 					array(
