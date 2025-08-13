@@ -70,6 +70,33 @@ function enqueue_admin_scripts() {
 		'nonce'   => wp_create_nonce( 'admin-ajax-nonce' ),
 	);
 	wp_localize_script( 'admin_js', 'wpdc', $data );
+
+	// Enqueue media library integration assets on Discourse settings pages
+	$screen = get_current_screen();
+	if ( $screen && ( strpos( $screen->id, 'discourse' ) !== false || strpos( $screen->id, 'sso_options' ) !== false ) ) {
+		// Enqueue WordPress media library
+		wp_enqueue_media();
+
+		// Enqueue custom login customization assets
+		$login_css_path = '/css/discourse-login-customization.css';
+		wp_register_style(
+			'discourse_login_customization_css',
+			plugins_url( $login_css_path, __FILE__ ),
+			array(),
+			filemtime( plugin_dir_path( __FILE__ ) . $login_css_path )
+		);
+		wp_enqueue_style( 'discourse_login_customization_css' );
+
+		$login_js_path = '/js/discourse-login-customization.js';
+		wp_register_script(
+			'discourse_login_customization_js',
+			plugins_url( $login_js_path, __FILE__ ),
+			array( 'jquery', 'media-upload', 'media-views' ),
+			filemtime( plugin_dir_path( __FILE__ ) . $login_js_path ),
+			true
+		);
+		wp_enqueue_script( 'discourse_login_customization_js' );
+	}
 }
 
 /**

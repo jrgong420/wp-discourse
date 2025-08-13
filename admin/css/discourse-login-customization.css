@@ -1,0 +1,64 @@
+/**
+ * Admin styles for Discourse login link customization
+ */
+
+/* Media selector container */
+.wpdc-media-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Media preview container */
+.wpdc-media-preview {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    background: #f9f9f9;
+}
+
+.wpdc-media-preview img {
+    display: block;
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+}
+
+/* Media selector buttons */
+.wpdc-select-media,
+.wpdc-remove-media {
+    margin: 0 5px 0 0;
+}
+
+.wpdc-remove-media {
+    color: #a00;
+}
+
+.wpdc-remove-media:hover {
+    color: #dc3232;
+}
+
+/* Responsive adjustments */
+@media (max-width: 782px) {
+    .wpdc-media-selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .wpdc-media-preview {
+        margin-bottom: 10px;
+    }
+}
+
+/* Settings form styling */
+.wp-discourse-options-form .wpdc-media-selector {
+    margin-top: 5px;
+}
+
+/* Icon size input styling */
+#discourse-sso-client-login-icon-size {
+    width: 80px;
+}
