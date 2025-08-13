@@ -55,17 +55,24 @@ class SSOClientBase extends DiscourseBase {
 		// Build icon HTML if enabled
 		$icon_html = '';
 		if ( ! empty( $options['sso-client-login-icon-enabled'] ) && ! empty( $options['sso-client-login-icon-id'] ) ) {
-			$icon_id = intval( $options['sso-client-login-icon-id'] );
-			$icon_size = ! empty( $options['sso-client-login-icon-size'] ) ? intval( $options['sso-client-login-icon-size'] ) : 24;
-			$icon_url = wp_get_attachment_image_url( $icon_id, 'full' );
-
-			if ( $icon_url ) {
-				$icon_html = sprintf(
-					'<img src="%s" alt="" style="width: %dpx; height: auto; margin-right: 8px; vertical-align: middle;" />',
-					esc_url( $icon_url ),
-					$icon_size
-				);
-			}
+			$icon_id   = (int) $options['sso-client-login-icon-id'];
+			$icon_size = isset( $options['sso-client-login-icon-size'] )
+				? max( 8, min( 256, (int) $options['sso-client-login-icon-size'] ) )
+				: 24;
+			$icon_html = wp_get_attachment_image(
+				$icon_id,
+				array( $icon_size, $icon_size ),
+				false,
+				array(
+					'class'       => 'wpdc-sso-client-login-icon',
+					'alt'         => '',
+					'aria-hidden' => 'true',
+					'role'        => 'presentation',
+					'decoding'    => 'async',
+					// Fallback spacing; themes can override via the class.
+					'style'       => 'vertical-align: middle; margin-right: 8px;',
+				)
+			) ?: '';
 		}
 
 		// Build the complete anchor content with icon and text
